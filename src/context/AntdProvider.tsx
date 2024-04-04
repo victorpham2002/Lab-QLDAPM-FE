@@ -1,6 +1,6 @@
 import { ConfigProvider } from 'antd';
 
-const AntdConfigProvider = ({ children }) => {
+const AntdConfigProvider = ({ children }: { children: React.ReactNode }) => {
   const theme = {
     token: {
       colorPrimary: '#301eb1',
