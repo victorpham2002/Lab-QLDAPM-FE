@@ -1,7 +1,8 @@
 import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
+// import { AntdRegistry } from "@ant-design/nextjs-registry";
+import AntdConfigProvider from "~/context/AntdProvider";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <AntdRegistry>{children}</AntdRegistry>
+        <AntdConfigProvider>{children}</AntdConfigProvider>
       </body>
     </html>
   );
