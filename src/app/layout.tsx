@@ -3,6 +3,11 @@ import "~/styles/globals.css";
 import { Inter } from "next/font/google";
 // import { AntdRegistry } from "@ant-design/nextjs-registry";
 import AntdConfigProvider from "~/context/AntdProvider";
+
+import { Layout, Typography } from "antd";
+import { Header } from "antd/lib/layout/layout";
+import { Content } from "antd/lib/layout/layout";
+import Title from "antd/lib/typography/title";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -22,7 +27,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <AntdConfigProvider>{children}</AntdConfigProvider>
+        <Layout>
+          <Header
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#fff",
+              padding: "12px",
+            }}
+          >
+            {" "}
+            <Title level={2}>Hệ thống quản lý sự kiện</Title>
+          </Header>
+          <Content>
+            <AntdConfigProvider>{children}</AntdConfigProvider>
+          </Content>
+        </Layout>
       </body>
     </html>
   );

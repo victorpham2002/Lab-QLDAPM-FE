@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -22,26 +23,26 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
 const App: React.FC = () => (
   <Form
     name="basic"
-    labelCol={{ span: 8 }}
-    wrapperCol={{ span: 16 }}
-    style={{ maxWidth: 600 }}
     initialValues={{ remember: true }}
     onFinish={onFinish}
     onFinishFailed={onFinishFailed}
     autoComplete="off"
+    style={{ minWidth: 400 }}
+    labelCol={{ span: 8 }}
+    wrapperCol={{ span: 16 }}
   >
     <Form.Item<FieldType>
-      label="Username"
+      label="Tên đăng nhập"
       name="username"
-      rules={[{ required: true, message: "Please input your username!" }]}
+      rules={[{ required: true, message: "Yêu cầu thông tin" }]}
     >
       <Input />
     </Form.Item>
 
     <Form.Item<FieldType>
-      label="Password"
+      label="Mật khẩu"
       name="password"
-      rules={[{ required: true, message: "Please input your password!" }]}
+      rules={[{ required: true, message: "Yêu cầu thông tin" }]}
     >
       <Input.Password />
     </Form.Item>
@@ -51,12 +52,12 @@ const App: React.FC = () => (
       valuePropName="checked"
       wrapperCol={{ offset: 8, span: 16 }}
     >
-      <Checkbox>Remember me</Checkbox>
+      <Checkbox>Ghi nhớ đăng nhập</Checkbox>
     </Form.Item>
 
     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
       <Button type="primary" htmlType="submit">
-        Submit
+        Đăng nhập
       </Button>
     </Form.Item>
   </Form>
