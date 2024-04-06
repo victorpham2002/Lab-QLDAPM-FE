@@ -7,20 +7,5 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <Row style={{ height: "90vh" }}>
-      <Col span={16} offset={4}>
-        <Card>
-          <Row>
-            <Col>
-              <Title level={3}>Title</Title>
-            </Col>
-          </Row>
-          <Row justify={"center"}>
-            <Col>{children}</Col>
-          </Row>
-        </Card>
-      </Col>
-    </Row>
-  );
+  return <Row style={{ height: "90vh" }}>{children}</Row>;
 }
