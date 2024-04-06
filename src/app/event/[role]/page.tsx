@@ -1,60 +1,104 @@
 "use client";
 
 import React from "react";
-import { Button, Card, Col, Modal, Row, Space, Spin, Table } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Space,
+  Spin,
+  Table,
+} from "antd";
 import type { TableProps } from "antd";
 import Title from "antd/es/typography/Title";
 import { useState } from "react";
+import dayjs from 'dayjs';
 
 interface DataType {
   key: string;
   title: string;
   created_at: Date;
-  start_at: string;
-  end_at: string;
+  start_at: Date;
+  end_at: Date;
   status: string;
+  description?: string;
 }
 
 const data: DataType[] = [
   {
     key: "1",
     title: "Sự kiện 1",
-    created_at: new Date(),
-    start_at: "2021-09-01",
-    end_at: "2021-09-30",
+    created_at: new Date("2021-08-01T00:00:00"),
+    start_at: new Date("2021-09-01T00:00:00"),
+    end_at: new Date("2021-09-30T23:59:59"),
     status: "Đã duyệt",
+    description: "Sự kiện này rất quan trọng",
   },
   {
     key: "2",
     title: "Sự kiện 2",
-    created_at: new Date(),
-    start_at: "2021-09-01",
-    end_at: "2021-09-30",
+    created_at: new Date("2021-08-01T00:00:00"),
+    start_at: new Date("2021-09-01T00:00:00"),
+    end_at: new Date("2021-09-30T23:59:59"),
     status: "Chờ duyệt",
+    description: "Sự kiện này cũng rất quan trọng",
   },
 ];
 
 const App: React.FC<{ params: { role: string } }> = ({ params }) => {
-  const { role } = params;
+  const role = params.role.toLowerCase() as "admin" | "organizer" | "student";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"new" | "detail" | "none">("none");
+  const [form] = Form.useForm();
 
-  const showModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const showModal = (event: string, record: DataType) => {
+    if (event === "detail") {
+      form.setFieldsValue({
+        title: record.title,
+        start_at: dayjs(record.start_at),
+        end_at: dayjs(record.end_at),
+        description: record.description,
+      });
+    }
+
     setIsModalOpen(true);
-    setModalType(e.currentTarget.value as "new" | "detail");
+    setModalType(event as "new" | "detail");
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
+
+    if (modalType === "new") {
+      // todo: create event
+      const res = form.getFieldsValue(true);
+      console.log("values:", res);
+    }
+    if (modalType === "detail") {
+      // todo: join event
+    }
+
+    setModalType("none");
   };
 
   const handleCancel = () => {
+    setModalType("none");
     setIsModalOpen(false);
   };
 
   const getTitle = () => {
     if (role === "admin") return "Quản lý sự kiện";
     return "Danh sách sự kiện";
+  };
+
+  const getModalTitle = () => {
+    if (modalType === "new") return "Tạo sự kiện";
+    if (modalType === "detail") return "Chi tiết sự kiện";
+    return "Loading...";
   };
 
   let columns: TableProps<DataType>["columns"];
@@ -70,16 +114,19 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
         title: "Ngày tạo",
         dataIndex: "created_at",
         key: "created_at",
+        render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Thời gian bắt đầu",
         dataIndex: "start_at",
         key: "start_at",
+        render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Thời gian kết thúc",
         dataIndex: "end_at",
         key: "end_at",
+        render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Trạng thái",
@@ -91,7 +138,7 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
         key: "action",
         render: (_, record) => (
           <Space size="middle">
-            <Button type="primary" value="detail" onClick={(e) => showModal(e)}>
+            <Button type="primary" onClick={() => showModal("detail", record)}>
               Chi tiết
             </Button>
             <Button type="primary" ghost>
@@ -115,16 +162,19 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
         title: "Ngày tạo",
         dataIndex: "created_at",
         key: "created_at",
+        render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Thời gian bắt đầu",
         dataIndex: "start_at",
         key: "start_at",
+        render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Thời gian kết thúc",
         dataIndex: "end_at",
         key: "end_at",
+        render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Trạng thái",
@@ -136,7 +186,7 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
         key: "action",
         render: (_, record) => (
           <Space size="middle">
-            <Button type="primary" value="detail" onClick={(e) => showModal(e)}>
+            <Button type="primary" onClick={() => showModal("detail", record)}>
               Chi tiết
             </Button>
           </Space>
@@ -172,7 +222,7 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
         key: "action",
         render: (_, record) => (
           <Space size="middle">
-            <Button type="primary" value="detail" onClick={(e) => showModal(e)}>
+            <Button type="primary" onClick={() => showModal("detail", record)}>
               Chi tiết
             </Button>
             <Button type="primary" ghost>
@@ -194,8 +244,11 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
             </Col>
 
             {role === "organizer" && (
-              <Button type="primary" value="new" onClick={(e) => showModal(e)}>
-                Tạo sự kiện
+              <Button
+                type="primary"
+                onClick={() => showModal("new", {} as DataType)}
+              >
+                + Tạo sự kiện
               </Button>
             )}
           </Row>
@@ -207,14 +260,43 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
         </Card>
       </Col>
       <Modal
-        title="Basic Modal"
+        title={getModalTitle()}
         open={isModalOpen}
+        okText={modalType === "detail" ? "Tham gia" : "Tạo"}
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        {modalType === "none" && <Spin />}
-        {modalType === "new" && <p>new</p>}
-        {modalType === "detail" && <p>detail</p>}
+        {modalType === "none" ? (
+          <Spin />
+        ) : (
+          <Form form={form} onFinish={handleOk}>
+            <Form.Item label="Tên sự kiện" name="title">
+              <Input
+                disabled={modalType === "detail"} required
+              />
+            </Form.Item>
+            <Form.Item label="Thời gian bắt đầu" name="start_at">
+              <DatePicker
+                showTime
+                disabled={modalType === "detail"}
+                required
+              />
+            </Form.Item>
+            <Form.Item label="Thời gian kết thúc" name="end_at">
+              <DatePicker
+                showTime
+                disabled={modalType === "detail"}
+                required
+              />
+            </Form.Item>
+            <Form.Item label="Mô tả" name="description">
+              <Input.TextArea
+                disabled={modalType === "detail"}
+                required
+              />
+            </Form.Item>
+          </Form>
+        )}
       </Modal>
     </>
   );
