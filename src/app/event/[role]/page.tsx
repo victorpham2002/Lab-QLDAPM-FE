@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 
 import React from "react";
@@ -17,7 +18,7 @@ import {
 import type { TableProps } from "antd";
 import Title from "antd/es/typography/Title";
 import { useState } from "react";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 interface DataType {
   key: string;
@@ -271,29 +272,16 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
         ) : (
           <Form form={form} onFinish={handleOk}>
             <Form.Item label="Tên sự kiện" name="title">
-              <Input
-                disabled={modalType === "detail"} required
-              />
+              <Input disabled={modalType === "detail"} required />
             </Form.Item>
             <Form.Item label="Thời gian bắt đầu" name="start_at">
-              <DatePicker
-                showTime
-                disabled={modalType === "detail"}
-                required
-              />
+              <DatePicker showTime disabled={modalType === "detail"} required />
             </Form.Item>
             <Form.Item label="Thời gian kết thúc" name="end_at">
-              <DatePicker
-                showTime
-                disabled={modalType === "detail"}
-                required
-              />
+              <DatePicker showTime disabled={modalType === "detail"} required />
             </Form.Item>
             <Form.Item label="Mô tả" name="description">
-              <Input.TextArea
-                disabled={modalType === "detail"}
-                required
-              />
+              <Input.TextArea disabled={modalType === "detail"} required />
             </Form.Item>
           </Form>
         )}
