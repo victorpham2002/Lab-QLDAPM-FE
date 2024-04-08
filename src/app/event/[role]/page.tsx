@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Card,
@@ -19,50 +19,57 @@ import type { TableProps } from "antd";
 import Title from "antd/es/typography/Title";
 import { useState } from "react";
 import dayjs from "dayjs";
-
 interface DataType {
   key: string;
-  title: string;
-  created_at: Date;
-  start_at: Date;
-  end_at: Date;
+  name: string;
+  createdAt: Date;
+  startDate: Date;
+  endDate: Date;
   status: string;
   description?: string;
 }
-
-const data: DataType[] = [
-  {
-    key: "1",
-    title: "Sự kiện 1",
-    created_at: new Date("2021-08-01T00:00:00"),
-    start_at: new Date("2021-09-01T00:00:00"),
-    end_at: new Date("2021-09-30T23:59:59"),
-    status: "Đã duyệt",
-    description: "Sự kiện này rất quan trọng",
-  },
-  {
-    key: "2",
-    title: "Sự kiện 2",
-    created_at: new Date("2021-08-01T00:00:00"),
-    start_at: new Date("2021-09-01T00:00:00"),
-    end_at: new Date("2021-09-30T23:59:59"),
-    status: "Chờ duyệt",
-    description: "Sự kiện này cũng rất quan trọng",
-  },
-];
-
 const App: React.FC<{ params: { role: string } }> = ({ params }) => {
   const role = params.role.toLowerCase() as "admin" | "organizer" | "student";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"new" | "detail" | "none">("none");
+  const [eventData, setEventData] = useState<DataType | null>(null);
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = document.cookie
+          ? document.cookie
+              .split("; ")
+              .find((row) => row.startsWith("token="))
+              ?.split("=")[1]
+          : "none";
+        const response = await fetch("/api/event", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data.data);
+          setEventData(data.data);
+        } else {
+          console.error("Failed to fetch user information");
+        }
+      } catch (error) {
+        console.error("Error while fetching user information:", error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
   const showModal = (event: string, record: DataType) => {
     if (event === "detail") {
       form.setFieldsValue({
-        title: record.title,
-        start_at: dayjs(record.start_at),
-        end_at: dayjs(record.end_at),
+        name: record.name,
+        startDate: dayjs(record.startDate),
+        endDate: dayjs(record.endDate),
         description: record.description,
       });
     }
@@ -71,13 +78,36 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
     setModalType(event as "new" | "detail");
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
     setIsModalOpen(false);
 
     if (modalType === "new") {
       // todo: create event
       const res = form.getFieldsValue(true);
-      console.log("values:", res);
+      try {
+        const token = document.cookie
+          ? document.cookie
+              .split("; ")
+              .find((row) => row.startsWith("token="))
+              ?.split("=")[1]
+          : "none";
+        const response = await fetch("/api/event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(res),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else {
+          console.error("Failed to create event");
+        }
+      } catch (error) {
+        console.error("Error while creating event:", error);
+      }
     }
     if (modalType === "detail") {
       // todo: join event
@@ -108,26 +138,26 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
     columns = [
       {
         title: "Tên sự kiện",
-        dataIndex: "title",
-        key: "title",
+        dataIndex: "name",
+        key: "name",
       },
       {
         title: "Ngày tạo",
-        dataIndex: "created_at",
-        key: "created_at",
-        render: (date: Date) => date.toLocaleString(),
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (date: Date) => (date ? new Date(date).toLocaleString() : ""),
       },
       {
         title: "Thời gian bắt đầu",
-        dataIndex: "start_at",
-        key: "start_at",
-        render: (date: Date) => date.toLocaleString(),
+        dataIndex: "startDate",
+        key: "startDate",
+        render: (date: Date) => (date ? new Date(date).toLocaleString() : ""),
       },
       {
         title: "Thời gian kết thúc",
-        dataIndex: "end_at",
-        key: "end_at",
-        render: (date: Date) => date.toLocaleString(),
+        dataIndex: "endDate",
+        key: "endDate",
+        render: (date: Date) => (date ? new Date(date).toLocaleString() : ""),
       },
       {
         title: "Trạng thái",
@@ -156,25 +186,25 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
     columns = [
       {
         title: "Tên sự kiện",
-        dataIndex: "title",
-        key: "title",
+        dataIndex: "name",
+        key: "name",
       },
       {
         title: "Ngày tạo",
-        dataIndex: "created_at",
-        key: "created_at",
+        dataIndex: "createdAt",
+        key: "createdAt",
         render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Thời gian bắt đầu",
-        dataIndex: "start_at",
-        key: "start_at",
+        dataIndex: "startDate",
+        key: "startDate",
         render: (date: Date) => date.toLocaleString(),
       },
       {
         title: "Thời gian kết thúc",
-        dataIndex: "end_at",
-        key: "end_at",
+        dataIndex: "endDate",
+        key: "endDate",
         render: (date: Date) => date.toLocaleString(),
       },
       {
@@ -200,18 +230,18 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
     columns = [
       {
         title: "Tên sự kiện",
-        dataIndex: "title",
-        key: "title",
+        dataIndex: "name",
+        key: "name",
       },
       {
         title: "Thời gian bắt đầu",
-        dataIndex: "start_at",
-        key: "start_at",
+        dataIndex: "startDate",
+        key: "startDate",
       },
       {
         title: "Thời gian kết thúc",
-        dataIndex: "end_at",
-        key: "end_at",
+        dataIndex: "endDate",
+        key: "endDate",
       },
       {
         title: "Trạng thái",
@@ -255,7 +285,7 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
           </Row>
           <Row justify={"center"}>
             <Col>
-              <Table columns={columns} dataSource={data} />
+              <Table columns={columns} dataSource={eventData} />
             </Col>
           </Row>
         </Card>
@@ -271,13 +301,13 @@ const App: React.FC<{ params: { role: string } }> = ({ params }) => {
           <Spin />
         ) : (
           <Form form={form} onFinish={handleOk}>
-            <Form.Item label="Tên sự kiện" name="title">
+            <Form.Item label="Tên sự kiện" name="name">
               <Input disabled={modalType === "detail"} required />
             </Form.Item>
-            <Form.Item label="Thời gian bắt đầu" name="start_at">
+            <Form.Item label="Thời gian bắt đầu" name="startDate">
               <DatePicker showTime disabled={modalType === "detail"} required />
             </Form.Item>
-            <Form.Item label="Thời gian kết thúc" name="end_at">
+            <Form.Item label="Thời gian kết thúc" name="endDate">
               <DatePicker showTime disabled={modalType === "detail"} required />
             </Form.Item>
             <Form.Item label="Mô tả" name="description">
