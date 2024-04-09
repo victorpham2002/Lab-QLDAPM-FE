@@ -378,6 +378,9 @@ const Event: React.FC<{
           if (record.startDate < new Date()) {
             return <Tag color="red">Outdated</Tag>;
           }
+          if (record.status === "JOINED") {
+            return <Tag color="blue">Joined</Tag>;
+          }
           return <Tag color="green">Available</Tag>;
         },
       },
@@ -393,6 +396,7 @@ const Event: React.FC<{
               type="primary"
               ghost
               onClick={() => handleOnClickJoinEvent(record)}
+              disabled={record.status === "JOINED"}
             >
               Tham gia
             </Button>
